@@ -214,23 +214,24 @@ extern int __real_fileno(FILE *stream);
     darshan_record_id __rec_id; \
     struct stdio_file_record_ref *__rec_ref; \
     char *__newpath; \
+    const char *__oldpath = __path; \
     int __fd; \
     MAP_OR_FAIL(fileno); \
     (void)__darshan_disabled; \
-    if(!__ret || !__path) break; \
-    __newpath = darshan_clean_file_path(__path); \
-    if(!__newpath) __newpath = (char*)__path; \
+    if(!__ret || !__oldpath) break; \
+    __newpath = darshan_clean_file_path(__oldpath); \
+    if(!__newpath) __newpath = (char*)__oldpath; \
     __rec_id = darshan_core_gen_record_id(__newpath); \
     __rec_ref = darshan_lookup_record_ref(stdio_runtime->rec_id_hash, &__rec_id, sizeof(darshan_record_id)); \
     if(!__rec_ref) __rec_ref = stdio_track_new_file_record(__rec_id, __newpath); \
     if(!__rec_ref) { \
-        if(__newpath != (char*)__path) free(__newpath); \
+        if(__newpath != (char*)__oldpath) free(__newpath); \
         break; \
     } \
     _STDIO_RECORD_OPEN(__ret, __rec_ref, __tm1, __tm2, 1, -1); \
     __fd = __real_fileno(__ret); \
     darshan_instrument_fs_data(__rec_ref->fs_type, __newpath, __fd); \
-    if(__newpath != (char*)__path) free(__newpath); \
+    if(__newpath != (char*)__oldpath) free(__newpath); \
 } while(0)
 
 #define STDIO_RECORD_REFOPEN(__ret, __rec_ref, __tm1, __tm2, __ref_counter) do { \

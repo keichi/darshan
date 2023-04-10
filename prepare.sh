@@ -1,4 +1,4 @@
 #!/bin/sh
 
 echo "Regenerating build files..."
-autoreconf -fi
+/opt/nec/ve/bin/autoreconf -fi
